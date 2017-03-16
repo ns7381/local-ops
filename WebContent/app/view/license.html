@@ -1,0 +1,23 @@
+<h2 class="page-header">授权管理</h2>
+<br>
+<div id="licenseTable-toolbar" class="btn-group">
+    <button id="btn-add" type="button" class="btn btn-default">
+        <i class="glyphicon glyphicon-plus"></i>新建
+    </button>
+    <button id="btn-license" type="button" class="btn btn-default">
+        <i class="glyphicon glyphicon-plus"></i>生成证书
+    </button>
+</div>
+<table id="licenseTable" data-toggle="table" data-url="license">
+    <thead>
+    <tr>
+        <th data-field="orgCode" data-sortable="true">组织机构编码</th>
+        <th data-field="orgName" data-sortable="true">组织机构名称</th>
+        <th data-field="type" data-sortable="true">类型</th>
+        <th data-field="serverLimit" data-sortable="true">云主机限制数</th>
+        <th data-field="serviceLimit" data-sortable="true">服务限制数</th>
+        <th data-field="endDate" data-sortable="true">有效期</th>
+        <th data-field="action" data-formatter="licenseActionFormatter" data-events="licenseActionEvents">操作</th>
+    </tr>
+    </thead>
+</table>

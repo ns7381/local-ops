@@ -1,0 +1,52 @@
+<form class="form-horizontal">
+    <div class="form-group form-required">
+        <label for="orgCode" class="control-label col-sm-3">组织机构编码：</label>
+
+        <div class="col-sm-7">
+            <input type="text" class="form-control" id="orgCode" name="orgCode">
+        </div>
+    </div>
+    <div class="form-group form-required">
+        <label for="orgName" class="control-label col-sm-3">组织机构名称：</label>
+
+        <div class="col-sm-7">
+            <input type="text" class="form-control" id="orgName" name="orgName">
+        </div>
+    </div>
+    <div class="form-group form-required">
+        <label for="type" class="control-label col-sm-3">类型：</label>
+
+        <div class="col-sm-7">
+            <select class="form-control" id="type" name="type">
+                <option value="PRO">生产</option>
+                <option value="TRIAL">测试</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group form-required">
+        <label for="serverLimit" class="control-label col-sm-3">云主机限制数量：</label>
+
+        <div class="col-sm-7">
+            <input type="text" class="form-control" id="serverLimit" name="serverLimit">
+        </div>
+    </div>
+    <div class="form-group form-required">
+        <label for="serviceLimit" class="control-label col-sm-3">服务限制数量：</label>
+
+        <div class="col-sm-7">
+            <input type="text" class="form-control" id="serviceLimit" name="serviceLimit">
+        </div>
+    </div>
+    <div class="form-group form-required">
+        <label for="dtp_input1" class="control-label col-sm-3">有效期：</label>
+        <div class="col-sm-7">
+            <div class="input-group date form_datetime" data-todayBtn="true"
+                 data-date-format="yyyy MM dd - p HH:ii" data-link-field="dtp_input1">
+                <input class="form-control" size="16" type="text" value="" readonly>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+            </div>
+        </div>
+        <input type="hidden" id="dtp_input1" name="endDate" value=""/><br/>
+    </div>
+</form>

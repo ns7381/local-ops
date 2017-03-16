@@ -1,0 +1,164 @@
+
+buildscript {
+	repositories { maven { url repositoriesUrl } }
+	configurations.all {
+		resolutionStrategy { cacheChangingModulesFor 0, 'seconds' //cacheDynamicVersionsFor 0, 'seconds'
+		}
+	}
+}
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'war'
+apply plugin: 'idea'
+apply plugin: 'eclipse-wtp'
+apply from: 'gradle/scripts/wtp-eclipse.gradle'
+apply from: 'gradle/scripts/web-common.gradle'
+apply from: 'gradle/scripts/deploy-war.gradle'
+apply from: 'resources.gradle'
+
+webAppDirName = 'WebContent' //The name of the web application source directory, relative to the project directory.
+
+[
+	compileJava,
+	compileTestJava,
+	compileGroovy
+]*.options*.encoding = sourceEncoding
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+ext{ springVersion = '4.2.5.RELEASE' }
+
+configurations {
+	//compile.exclude module: 'servlet-api'
+	all*.exclude group: 'org.mortbay.jetty', module: 'servlet-api'
+	all*.exclude group: 'org.mortbay.jetty', module: 'servlet-api-2.5'
+	all*.exclude group: 'jdom', module: 'jdom'
+	all*.exclude module: 'geronimo-servlet_2.5_spec'
+	all*.exclude group: 'org.mortbay.jetty', module: 'jsp-2.1'
+	all*.exclude group: 'javax.xml.stream', module: 'stax-api'
+	all*.exclude group: 'xpp3', module: 'xpp3_min'
+	all*.exclude group: 'tomcat', module: 'jasper-compiler'
+	all*.exclude group: 'tomcat', module: 'jasper-runtime'
+	all*.exclude group: 'javax.websocket', module: 'javax.websocket-api'
+
+	all*.exclude group: 'com.sun.jersey', module: 'jersey-server'
+	all*.exclude group: 'com.sun.jersey', module: 'jersey-core'
+	all*.exclude group: 'com.inspur.cloud', module: 'cloud-websocket-mock'
+
+	all*.exclude group: 'com.thimbleware.jmemcached', module: 'jmemcached-core'
+	all*.exclude group: 'com.octo.captcha', module: 'jcaptcha'
+	//all*.exclude group: 'org.springframework.security'
+	all*.exclude group: 'net.sf.ehcache', module: 'ehcache-terracotta'
+}
+artifacts { archives war }
+dependencies {
+
+
+	//insight
+	compile("com.inspur.cloudframework:cloud-license-manager:1.0.0-SNAPSHOT")
+	compile("org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r")
+	compile("ch.ethz.ganymed:ganymed-ssh2:build210")
+
+
+	compile("org.codehaus.groovy:groovy:2.4.3")
+	compile("com.inspur.cloudframework:jackson-extends:2.5.3-SNAPSHOT")
+	compile("com.inspur.cloudframework:persistence:2.0.0-SNAPSHOT")
+	compile("com.inspur.cloudframework:spring-side:4.1.0-SNAPSHOT")
+	compile("com.thoughtworks.xstream:xstream:1.4.2")
+
+	runtime("commons-fileupload:commons-fileupload:1.2.2")
+	runtime("javax.servlet:javax.servlet-api:3.1.0")
+	compile("org.quartz-scheduler:quartz:2.2.1")
+
+	//spring
+	compile("org.springframework:spring-jdbc:$springVersion")
+	compile("org.springframework:spring-orm:$springVersion")
+	compile("org.springframework:spring-oxm:$springVersion")
+	compile("org.springframework:spring-messaging:$springVersion")
+	compile("org.springframework:spring-websocket:$springVersion")
+	compile("org.springframework.security:spring-security-web:4.0.2.RELEASE")
+	compile("org.springframework.security:spring-security-config:4.0.2.RELEASE")
+
+	//utils
+	compile("org.apache.commons:commons-exec:1.3")
+	compile("commons-beanutils:commons-beanutils:1.8.3")
+	compile("commons-lang:commons-lang:2.5")
+	compile("commons-collections:commons-collections:3.2.1")
+	//LogForSql
+	compile("com.alibaba:druid:1.0.18")
+	compile("net.lingala.zip4j:zip4j:1.3.1")
+	compile("commons-io:commons-io:2.3")
+	
+	
+	runtime('net.sf.ehcache:ehcache-jgroupsreplication:1.7')
+	runtime('net.sf.ehcache:ehcache:2.5.2')
+	//mysql
+	runtime("mysql:mysql-connector-java:5.1.38")
+	runtime("xerces:xercesImpl:2.9.1")
+	runtime("xml-apis:xml-apis:2.0.2")
+	runtime("org.springframework:spring-context-support:$springVersion")
+	//	runtime("bsh:bsh:2.0b4")
+	runtime("javax.servlet:jstl:1.2")
+	runtime("taglibs:standard:1.1.2")
+	runtime("org.slf4j:slf4j-log4j12:1.6.4")
+	runtime("com.ibm.icu:icu4j:3.4.4")
+
+	//druid1.0.18
+	runtime("com.alibaba:druid:1.0.18")
+
+	runtime("cglib:cglib-nodep:2.2.2")
+
+}
+
+ext.excludeRegexs = []
+war {
+	baseName jarBaseName
+
+	classpath = configurations.runtime
+	manifest {
+		attributes("DisableIBMJAXWSEngine" : true)
+		attributes("Class-Path" : "")
+		attributes("date" : new Date())
+	}
+
+	classpath = classpath.filter { File file ->
+		!isExcludeJar(file.name)
+	}
+
+
+	webInf {
+		into('classes') {
+			from "${buildDir}/resources/main"
+			from "${buildDir}/classes/main"
+		}
+
+	}
+
+	from("${buildDir}/resourcesWeb/initializer.js") { into "resources/" }
+}
+
+task warForServers << {
+
+}
+serverTasks.each {
+	warForServers.dependsOn project.tasks[it]
+}
+task deploy << { deployAppToServers() }
+deploy.dependsOn warForServers
+
+task initJS << {
+	def initJS = new File("${buildDir}/resourcesWeb/initializer.js");
+	if(initJS.exists()) initJS.delete();
+	def parent = initJS.getParentFile();
+	if(!parent.exists()) parent.mkdir();
+	[
+		"WebContent/resources/commons/router_table.js",
+		"WebContent/resources/commons/main.js",
+		"WebContent/resources/commons/pub_menu.js",
+		"WebContent/resources/initializer.js"
+	].each {
+		initJS.append(new File(it).text, "utf-8")
+	}
+}
+
+//war.dependsOn initJS
