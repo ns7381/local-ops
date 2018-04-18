@@ -1,10 +1,10 @@
 # single-page-app
-##前端框架： 
+## 前端框架： 
           单页面应用
           requirejs模块化编程
           内置bootstrap、bootstrap3-dialog、bootstrap-fileinput、bootstrap-table
 
-##目录结构：  
+## 目录结构：  
            --app           用户代码部分
              --image       图片
              --view        页面视图，包含页面js和html
@@ -14,13 +14,13 @@
              --config.js   requirejs配置部分
            --WEB-INF       默认提供的一种jsp启动模式，用户可使用其他方式
            
-##页面入口： 
+## 页面入口： 
             WEB-INF/views/index.jsp
 
-##视图：
+## 视图：
           约定大于配置，默认A.js加载A.html的模板
           使用requirejs写法，返回一个包含init方法的json对象
-##Ajax:     
+## Ajax:     
           Ajax.get/put/putJson/postJson
           示例:
           `Ajax.postJson("deployment", deployment, function () {
@@ -30,7 +30,7 @@
           }, function (msg) {
               Alert.error('应用' + deployment.name + '创建失败!原因：' + msg);
           });`
-##Dialog/Table
+## Dialog/Table
           [bootstrap3-dialog](http://vadimg.com/twitter-bootstrap-wizard-example/#examples)
           示例：
           `
