@@ -1,3 +1,0 @@
-[submodule "gradle"]
-	path = gradle
-	url = http://gitserver/iop/gradle.git
